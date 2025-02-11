@@ -1,57 +1,52 @@
 import random
 import string
 
-def generate_password(length=12, include_numbers=True, include_symbols=True):
+def generate_password(length=12, use_numbers=True, use_symbols=True):
     """
-    Generate a secure password with customizable options.
-    
+    Create a random password based on given options.
+
     Args:
-        length (int): Length of the password (default: 12)
-        include_numbers (bool): Include numbers in password (default: True)
-        include_symbols (bool): Include special characters (default: True)
-    
+        length (int): Desired length of the password (default: 12)
+        use_numbers (bool): Whether to include numbers (default: True)
+        use_symbols (bool): Whether to include special characters (default: True)
+
     Returns:
-        str: Generated password
+        str: The generated password
     """
-    # Define character sets
+    # Define character pools
     letters = string.ascii_letters
-    digits = string.digits if include_numbers else ""
-    symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?" if include_symbols else ""
-    
-    # Combine all allowed characters
-    all_characters = letters + digits + symbols
-    
-    # Ensure password contains at least one character from each selected type
-    password = [
-        random.choice(letters),  # Ensure at least one letter
-        random.choice(digits) if include_numbers else "",
-        random.choice(symbols) if include_symbols else ""
-    ]
-    
-    # Fill the rest of the password
-    remaining_length = length - sum(len(x) for x in password)
-    password.extend(random.choice(all_characters) for _ in range(remaining_length))
-    
-    # Shuffle the password characters
-    password_list = list(''.join(password))
-    random.shuffle(password_list)
-    
-    return ''.join(password_list)
+    numbers = string.digits if use_numbers else ""
+    special_chars = "!@#$%^&*()_+-=[]{}|;:,.<>?" if use_symbols else ""
+
+    # Merge allowed character sets
+    char_pool = letters + numbers + special_chars
+    if not char_pool:
+        raise ValueError("Password must include at least one type of character.")
+
+    # Ensure at least one character from each selected type
+    password = []
+    password.append(random.choice(letters))  # Always include at least one letter
+    if use_numbers:
+        password.append(random.choice(numbers))
+    if use_symbols:
+        password.append(random.choice(special_chars))
+
+    # Fill the rest of the password with random choices
+    password.extend(random.choice(char_pool) for _ in range(length - len(password)))
+
+    # Shuffle to remove predictable patterns
+    random.shuffle(password)
+
+    return ''.join(password)
 
 def main():
-    """
-    Main function to demonstrate password generation with different options.
-    """
-    print("Password Generator\n")
-    
-    # Generate different types of passwords
-    simple_pass = generate_password(length=8, include_numbers=False, include_symbols=False)
-    standard_pass = generate_password(length=12)
-    strong_pass = generate_password(length=16)
-    
-    print(f"Simple Password (8 chars, letters only): {simple_pass}")
-    print(f"Standard Password (12 chars, all chars): {standard_pass}")
-    print(f"Strong Password (16 chars, all chars): {strong_pass}")
+    """Quick demo of the password generator."""
+    print("🔒 Password Generator 🔒\n")
+
+    # Generate sample passwords
+    print(f"Basic Password (8 chars, letters only):  {generate_password(8, False, False)}")
+    print(f"Standard Password (12 chars, mixed):     {generate_password(12)}")
+    print(f"Strong Password (16 chars, mixed):       {generate_password(16)}")
 
 if __name__ == "__main__":
     main()
